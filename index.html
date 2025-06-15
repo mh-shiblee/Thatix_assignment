@@ -25,13 +25,16 @@
     </section>
 <!-- this the section for showing the data from the api -->
     <section>
-      <div class="container">
-         <form class="search-bar d-flex">
-             <input class="form-control me-2" type="search" placeholder="Search for recipes" aria-label="Search">
-             <button type="button" class="btn btn-warning"><i class="bi bi-search"></i></button>
-          </form>
-      </div>
-    </section>
+  <div class="container">
+    <form class="search-bar d-flex" onsubmit="return false;">
+      <input id="search-input" class="form-control me-2" type="search" placeholder="Search for recipes" aria-label="Search">
+      <button id="search-button" type="button" class="btn btn-warning">
+        <i class="bi bi-search"></i>
+      </button>
+    </form>
+  </div>
+</section>
+
 
     <section>
          <div class="container mt-4">

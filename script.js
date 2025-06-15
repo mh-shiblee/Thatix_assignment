@@ -1,15 +1,22 @@
 const cardContainer = document.getElementById("card-container");
+const searchInput = document.getElementById("search-input");
+const searchButton = document.getElementById("search-button");
 
-async function getMeals() {
-  const url = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+async function getMeals(searchTerm = "") {
+  const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`;
+  cardContainer.innerHTML = ""; // Clear previous results
 
   try {
     const response = await fetch(url);
     const result = await response.json();
     const meals = result.meals;
 
+    if (!meals) {
+      cardContainer.innerHTML = `<p class='text-center text-danger fw-bold'>No meals found for "${searchTerm}".</p>`;
+      return;
+    }
 
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < meals.length && i < 25; i++) {
       const meal = meals[i];
 
       const cardHTML = `
@@ -18,7 +25,7 @@ async function getMeals() {
             <img src="${meal.strMealThumb}" class="card-img-top" alt="${meal.strMeal}">
             <div class="card-body">
               <h5 class="card-title">${meal.strMeal}</h5>
-              <p class="card-text">Recipe: ${meal.strInstructions}</p>
+              <p class="card-text">Recipe: ${meal.strInstructions.substring(0, 100)}...</p>
               <button type="button" class="btn btn-warning btn-sm view-details" 
                       data-title="${meal.strMeal}" 
                       data-img="${meal.strMealThumb}" 
@@ -33,8 +40,8 @@ async function getMeals() {
       cardContainer.innerHTML += cardHTML;
     }
 
-
-        const detailButtons = document.querySelectorAll(".view-details");
+    // Attach modal openers
+    const detailButtons = document.querySelectorAll(".view-details");
     detailButtons.forEach(button => {
       button.addEventListener("click", () => {
         const title = button.getAttribute("data-title");
@@ -50,36 +57,25 @@ async function getMeals() {
       });
     });
 
-
-
   } catch (error) {
     console.log("Something went wrong:", error);
     cardContainer.innerHTML = "<p class='text-danger'>Failed to load meals.</p>";
   }
 }
 
+// Search by button click
+searchButton.addEventListener("click", () => {
+  const searchTerm = searchInput.value.trim();
+  getMeals(searchTerm);
+});
 
-let mybutton = document.getElementById("btn-back-to-top");
-
-window.onscroll = function () {
-  scrollFunction();
-};
-
-function scrollFunction() {
-  if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) 
-    {
-    mybutton.style.display = "block";
-  } else {
-    mybutton.style.display = "none";
+// Also allow Enter key
+searchInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    searchButton.click();
   }
-}
+});
 
-mybutton.addEventListener("click", backToTop);
-
-function backToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
-
+// Initial load
 getMeals();
-
